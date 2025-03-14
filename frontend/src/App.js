@@ -1,0 +1,150 @@
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
+// Auth Components
+import Login from './pages/auth/Login';
+import Register from './pages/auth/Register';
+import Profile from './pages/Profile';
+
+// Admin Components
+import AdminDashboard from './pages/admin/Dashboard';
+import UserList from './pages/admin/users/UserList';
+import UserForm from './pages/admin/users/UserForm';
+import NewsList from './pages/admin/news/NewsList';
+import NewsForm from './pages/admin/news/NewsForm';
+import EventList from './pages/admin/events/EventList';
+import EventForm from './pages/admin/events/EventForm';
+import MemberList from './pages/admin/panchayat/MemberList';
+import MemberForm from './pages/admin/panchayat/MemberForm';
+import ServiceTypeList from './pages/admin/services/ServiceTypeList';
+import ServiceTypeForm from './pages/admin/services/ServiceTypeForm';
+import ServiceRequestList from './pages/admin/services/ServiceRequestList';
+import ServiceRequestDetail from './pages/admin/services/ServiceRequestDetail';
+import GalleryList from './pages/admin/gallery/GalleryList';
+import GalleryForm from './pages/admin/gallery/GalleryForm';
+import DocumentList from './pages/admin/documents/DocumentList';
+import DocumentForm from './pages/admin/documents/DocumentForm';
+import PollList from './pages/admin/polls/PollList';
+import PollForm from './pages/admin/polls/PollForm';
+import PollDetail from './pages/admin/polls/PollDetail';
+
+// Public Components
+import Home from './pages/Home';
+import PublicNewsList from './pages/news/NewsList';
+import NewsDetail from './pages/news/NewsDetail';
+import PublicEventsList from './pages/events/EventsList';
+import EventDetail from './pages/events/EventDetail';
+import MemberDetail from './pages/panchayat/MemberDetail';
+import ServiceRequestForm from './pages/services/ServiceRequestForm';
+import UserRequestList from './pages/services/UserRequestList';
+import UserRequestDetail from './pages/services/UserRequestDetail';
+import Gallery from './pages/gallery/Gallery';
+import GalleryDetail from './pages/gallery/GalleryDetail';
+import DocumentRepository from './pages/documents/DocumentRepository';
+import PublicPollList from './pages/polls/PollList';
+import PublicPollDetail from './pages/polls/PollDetail';
+import NotFound from './pages/NotFound';
+import MembersList from './pages/panchayat/MembersList';
+import PanchayatMembers from './components/PanchayatMembers';
+
+function App() {
+  return (
+    <>
+      <Router>
+        <Routes>
+          {/* Public Routes */}
+          <Route path="/" element={<Home />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/profile" element={<Profile />} />
+          
+          {/* News Routes */}
+          <Route path="/news" element={<PublicNewsList />} />
+          <Route path="/news/:id" element={<NewsDetail />} />
+          
+          {/* Events Routes */}
+          <Route path="/events" element={<PublicEventsList />} />
+          <Route path="/events/:id" element={<EventDetail />} />
+          
+          <Route path="/panchayat/members/:id" element={<MemberDetail />} />
+          
+          {/* Service Request Routes */}
+          <Route path="/services/requests" element={<UserRequestList />} />
+          <Route path="/services/requests/new" element={<ServiceRequestForm />} />
+          <Route path="/services/requests/:id" element={<UserRequestDetail />} />
+          
+          {/* Gallery Routes */}
+          <Route path="/gallery" element={<Gallery />} />
+          <Route path="/gallery/:id" element={<GalleryDetail />} />
+          
+          {/* Document Routes */}
+          <Route path="/documents" element={<DocumentRepository />} />
+          
+          {/* Poll Routes */}
+          <Route path="/polls" element={<PublicPollList />} />
+          <Route path="/polls/:id" element={<PublicPollDetail />} />
+          
+          {/* Admin Routes */}
+          <Route path="/admin" element={<AdminDashboard />} />
+          
+          {/* User Management Routes */}
+          <Route path="/admin/users" element={<UserList />} />
+          <Route path="/admin/users/add" element={<UserForm />} />
+          <Route path="/admin/users/edit/:id" element={<UserForm />} />
+          
+          {/* News Management Routes */}
+          <Route path="/admin/news" element={<NewsList />} />
+          <Route path="/admin/news/add" element={<NewsForm />} />
+          <Route path="/admin/news/edit/:id" element={<NewsForm />} />
+          
+          {/* Event Management Routes */}
+          <Route path="/admin/events" element={<EventList />} />
+          <Route path="/admin/events/add" element={<EventForm />} />
+          <Route path="/admin/events/edit/:id" element={<EventForm />} />
+          
+          {/* Panchayat Management Routes */}
+          <Route path="/admin/panchayat/members" element={<MemberList />} />
+          <Route path="/admin/panchayat/members/add" element={<MemberForm />} />
+          <Route path="/admin/panchayat/members/edit/:id" element={<MemberForm />} />
+          
+          {/* Service Management Routes */}
+          <Route path="/admin/services/types" element={<ServiceTypeList />} />
+          <Route path="/admin/services/types/add" element={<ServiceTypeForm />} />
+          <Route path="/admin/services/types/edit/:id" element={<ServiceTypeForm />} />
+          <Route path="/admin/services/requests" element={<ServiceRequestList />} />
+          <Route path="/admin/services/requests/:id" element={<ServiceRequestDetail />} />
+          
+          {/* Gallery Management Routes */}
+          <Route path="/admin/gallery" element={<GalleryList />} />
+          <Route path="/admin/gallery/add" element={<GalleryForm />} />
+          <Route path="/admin/gallery/edit/:id" element={<GalleryForm />} />
+          
+          {/* Document Management Routes */}
+          <Route path="/admin/documents" element={<DocumentList />} />
+          <Route path="/admin/documents/add" element={<DocumentForm />} />
+          <Route path="/admin/documents/edit/:id" element={<DocumentForm />} />
+          
+          {/* Poll Management Routes */}
+          <Route path="/admin/polls" element={<PollList />} />
+          <Route path="/admin/polls/add" element={<PollForm />} />
+          <Route path="/admin/polls/edit/:id" element={<PollForm />} />
+          <Route path="/admin/polls/:id" element={<PollDetail />} />
+          
+          {/* Panchayat Members Route */}
+          <Route path="/panchayat/members" element={<MembersList />} />
+          
+          {/* Panchayat Route */}
+          <Route path="/panchayat" element={<PanchayatMembers />} />
+          
+          {/* 404 Route */}
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+      </Router>
+      <ToastContainer />
+    </>
+  );
+}
+
+export default App;
