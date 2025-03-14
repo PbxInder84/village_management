@@ -4,24 +4,51 @@ const { check } = require('express-validator');
 const userController = require('../controllers/userController');
 const { auth } = require('../middleware/auth');
 const { roleCheck } = require('../middleware/auth');
+const User = require('../models/User');
 
 // @route   GET api/users
 // @desc    Get all users
 // @access  Private/Admin
-router.get(
-  '/',
-  [auth, roleCheck(['admin'])],
-  userController.getAllUsers
-);
+router.get('/', auth, async (req, res) => {
+  try {
+    // Check if user is admin
+    if (!req.user.isAdmin && req.user.role !== 'admin') {
+      return res.status(401).json({ msg: 'Not authorized' });
+    }
+    
+    const users = await User.find().select('-password').sort({ createdAt: -1 });
+    res.json(users);
+  } catch (err) {
+    console.error('Error getting users:', err.message);
+    res.status(500).send('Server Error');
+  }
+});
 
 // @route   GET api/users/:id
 // @desc    Get user by ID
-// @access  Private/Admin
-router.get(
-  '/:id',
-  [auth, roleCheck(['admin'])],
-  userController.getUserById
-);
+// @access  Private (Admin or own user)
+router.get('/:id', auth, async (req, res) => {
+  try {
+    // Check if user is requesting their own profile or is an admin
+    if (req.user.id !== req.params.id && req.user.role !== 'admin') {
+      return res.status(403).json({ msg: 'Not authorized to access this user profile' });
+    }
+    
+    const user = await User.findById(req.params.id).select('-password');
+    
+    if (!user) {
+      return res.status(404).json({ msg: 'User not found' });
+    }
+    
+    res.json(user);
+  } catch (err) {
+    console.error('Error getting user by ID:', err.message);
+    if (err.kind === 'ObjectId') {
+      return res.status(404).json({ msg: 'User not found' });
+    }
+    res.status(500).send('Server Error');
+  }
+});
 
 // @route   PUT api/users/:id
 // @desc    Update user

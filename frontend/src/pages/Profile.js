@@ -1,20 +1,20 @@
 import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Navigate } from 'react-router-dom';
 import { getCurrentUser } from '../features/auth/authSlice';
 import Layout from '../components/layout/Layout';
 import Card from '../components/ui/Card';
 import Spinner from '../components/common/Spinner';
 
 const Profile = () => {
-  const { user, isLoading } = useSelector((state) => state.auth);
+  const { user, isAuthenticated, loading } = useSelector(state => state.auth);
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [loadingProfile, setLoadingProfile] = useState(true);
   
   useEffect(() => {
     // Check if user is logged in
-    const token = localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user')).token : null;
+    const token = localStorage.getItem('token');
     
     if (!token) {
       navigate('/login');
@@ -28,9 +28,7 @@ const Profile = () => {
       } catch (error) {
         console.error('Failed to fetch user data:', error);
         // If token is invalid, redirect to login
-        if (error.includes('Token is not valid') || error.includes('No token found')) {
-          navigate('/login');
-        }
+        navigate('/login');
       } finally {
         setLoadingProfile(false);
       }
@@ -39,7 +37,11 @@ const Profile = () => {
     fetchUserData();
   }, [dispatch, navigate]);
   
-  if (isLoading || loadingProfile) {
+  if (!isAuthenticated && !loading) {
+    return <Navigate to="/login" />;
+  }
+  
+  if (loading || loadingProfile) {
     return (
       <Layout>
         <div className="flex justify-center items-center min-h-screen">

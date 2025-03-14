@@ -5,16 +5,59 @@ const galleryController = require('../controllers/galleryController');
 const { auth } = require('../middleware/auth');
 const { roleCheck } = require('../middleware/auth');
 const upload = require('../middleware/upload');
+const Gallery = require('../models/Gallery');
 
 // @route   GET api/gallery
-// @desc    Get all gallery images
+// @desc    Get all gallery items
 // @access  Public
-router.get('/', galleryController.getGalleryItems);
+router.get('/', async (req, res) => {
+  try {
+    const galleryItems = await Gallery.find().sort({ createdAt: -1 });
+    res.json(galleryItems);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send('Server Error');
+  }
+});
+
+// @route   GET api/gallery/all
+// @desc    Get all gallery items (admin)
+// @access  Private/Admin
+router.get('/all', auth, async (req, res) => {
+  try {
+    // Check if user is admin
+    if (!req.user.isAdmin && !req.user.role.includes('admin')) {
+      return res.status(401).json({ msg: 'Not authorized' });
+    }
+    
+    const galleryItems = await Gallery.find().sort({ createdAt: -1 });
+    res.json(galleryItems);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send('Server Error');
+  }
+});
 
 // @route   GET api/gallery/:id
-// @desc    Get gallery image by ID
+// @desc    Get gallery item by ID
 // @access  Public
-router.get('/:id', galleryController.getGalleryById);
+router.get('/:id', async (req, res) => {
+  try {
+    const galleryItem = await Gallery.findById(req.params.id);
+    
+    if (!galleryItem) {
+      return res.status(404).json({ msg: 'Gallery item not found' });
+    }
+    
+    res.json(galleryItem);
+  } catch (err) {
+    console.error(err.message);
+    if (err.kind === 'ObjectId') {
+      return res.status(404).json({ msg: 'Gallery item not found' });
+    }
+    res.status(500).send('Server Error');
+  }
+});
 
 // @route   POST api/gallery
 // @desc    Upload a new gallery image

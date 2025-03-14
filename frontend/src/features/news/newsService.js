@@ -1,15 +1,11 @@
 import axios from 'axios';
+import baseService from '../services/baseService';
 
-// Get all news (admin)
-const getAllNews = async (token) => {
-  const config = {
-    headers: {
-      'x-auth-token': token
-    }
-  };
-  
-  const response = await axios.get('/api/news/all', config);
-  
+const API_URL = '/api/news';
+
+// Get all news
+const getAllNews = async () => {
+  const response = await baseService.get(`${API_URL}/all`);
   return response.data;
 };
 

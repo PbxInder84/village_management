@@ -1,75 +1,42 @@
-import axios from 'axios';
+import baseService from '../services/baseService';
+
+const API_URL = '/api/users';
 
 // Get all users
-const getUsers = async (token) => {
-  const config = {
-    headers: {
-      'x-auth-token': token
-    }
-  };
-  
-  const response = await axios.get('/api/users', config);
-  
+const getUsers = async () => {
+  const response = await baseService.get(API_URL);
   return response.data;
 };
 
 // Get user by ID
-const getUserById = async (id, token) => {
-  const config = {
-    headers: {
-      'x-auth-token': token
-    }
-  };
-  
-  const response = await axios.get(`/api/users/${id}`, config);
-  
+const getUserById = async (id) => {
+  const response = await baseService.get(`${API_URL}/${id}`);
+  return response.data;
+};
+
+// Create user
+const createUser = async (userData) => {
+  const response = await baseService.post(API_URL, userData);
   return response.data;
 };
 
 // Update user
-const updateUser = async (id, userData, token) => {
-  const config = {
-    headers: {
-      'x-auth-token': token
-    }
-  };
-  
-  const response = await axios.put(`/api/users/${id}`, userData, config);
-  
-  return response.data;
-};
-
-// Update user role
-const updateUserRole = async (id, role, token) => {
-  const config = {
-    headers: {
-      'x-auth-token': token
-    }
-  };
-  
-  const response = await axios.put(`/api/users/${id}/role`, { role }, config);
-  
+const updateUser = async (id, userData) => {
+  const response = await baseService.put(`${API_URL}/${id}`, userData);
   return response.data;
 };
 
 // Delete user
-const deleteUser = async (id, token) => {
-  const config = {
-    headers: {
-      'x-auth-token': token
-    }
-  };
-  
-  const response = await axios.delete(`/api/users/${id}`, config);
-  
+const deleteUser = async (id) => {
+  const response = await baseService.delete(`${API_URL}/${id}`);
   return response.data;
 };
 
 const userService = {
   getUsers,
   getUserById,
+  createUser,
   updateUser,
-  updateUserRole,
   deleteUser
 };
 

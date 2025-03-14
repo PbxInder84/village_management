@@ -35,15 +35,14 @@ export const getUserById = createAsyncThunk(
   'users/getById',
   async (id, thunkAPI) => {
     try {
-      const token = thunkAPI.getState().auth.user.token;
-      return await userService.getUserById(id, token);
+      return await userService.getUserById(id);
     } catch (error) {
-      const message = 
-        (error.response && 
-          error.response.data && 
-          error.response.data.msg) ||
-        error.message ||
-        error.toString();
+      const message = error.response?.data?.msg || error.message || 'Failed to fetch user';
+      
+      // If forbidden, show a more user-friendly message
+      if (error.response?.status === 403) {
+        return thunkAPI.rejectWithValue('You do not have permission to view this user');
+      }
       
       return thunkAPI.rejectWithValue(message);
     }

@@ -27,11 +27,24 @@ exports.auth = async (req, res, next) => {
 
 exports.roleCheck = (roles) => {
   return (req, res, next) => {
+    // Check if user exists
+    if (!req.user) {
+      return res.status(401).json({ msg: 'User not authenticated' });
+    }
+    
+    // Check if user has admin role
+    if (req.user.role === 'admin') {
+      return next(); // Admin can access everything
+    }
+    
+    // For non-admin users, check if they have the required role
     if (!roles.includes(req.user.role)) {
+      console.log(`Access denied: User role ${req.user.role} not in allowed roles: ${roles.join(', ')}`);
       return res.status(403).json({ 
         msg: `Role ${req.user.role} is not authorized to access this resource` 
       });
     }
+    
     next();
   };
 }; 

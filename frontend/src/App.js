@@ -2,11 +2,14 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import ProtectedRoute from './components/routing/ProtectedRoute';
 
 // Auth Components
 import Login from './pages/auth/Login';
 import Register from './pages/auth/Register';
 import Profile from './pages/Profile';
+import ForgotPassword from './pages/auth/ForgotPassword';
+import ResetPassword from './pages/auth/ResetPassword';
 
 // Admin Components
 import AdminDashboard from './pages/admin/Dashboard';
@@ -58,7 +61,13 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
-          <Route path="/profile" element={<Profile />} />
+          
+          {/* Protected Routes */}
+          <Route path="/profile" element={
+            <ProtectedRoute>
+              <Profile />
+            </ProtectedRoute>
+          } />
           
           {/* News Routes */}
           <Route path="/news" element={<PublicNewsList />} />
@@ -87,56 +96,166 @@ function App() {
           <Route path="/polls/:id" element={<PublicPollDetail />} />
           
           {/* Admin Routes */}
-          <Route path="/admin" element={<AdminDashboard />} />
+          <Route path="/admin" element={
+            <ProtectedRoute>
+              <AdminDashboard />
+            </ProtectedRoute>
+          } />
           
           {/* User Management Routes */}
-          <Route path="/admin/users" element={<UserList />} />
-          <Route path="/admin/users/add" element={<UserForm />} />
-          <Route path="/admin/users/edit/:id" element={<UserForm />} />
+          <Route path="/admin/users" element={
+            <ProtectedRoute>
+              <UserList />
+            </ProtectedRoute>
+          } />
+          <Route path="/admin/users/add" element={
+            <ProtectedRoute>
+              <UserForm />
+            </ProtectedRoute>
+          } />
+          <Route path="/admin/users/edit/:id" element={
+            <ProtectedRoute>
+              <UserForm />
+            </ProtectedRoute>
+          } />
           
           {/* News Management Routes */}
-          <Route path="/admin/news" element={<NewsList />} />
-          <Route path="/admin/news/add" element={<NewsForm />} />
-          <Route path="/admin/news/edit/:id" element={<NewsForm />} />
+          <Route path="/admin/news" element={
+            <ProtectedRoute>
+              <NewsList />
+            </ProtectedRoute>
+          } />
+          <Route path="/admin/news/add" element={
+            <ProtectedRoute>
+              <NewsForm />
+            </ProtectedRoute>
+          } />
+          <Route path="/admin/news/edit/:id" element={
+            <ProtectedRoute>
+              <NewsForm />
+            </ProtectedRoute>
+          } />
           
           {/* Event Management Routes */}
-          <Route path="/admin/events" element={<EventList />} />
-          <Route path="/admin/events/add" element={<EventForm />} />
-          <Route path="/admin/events/edit/:id" element={<EventForm />} />
+          <Route path="/admin/events" element={
+            <ProtectedRoute>
+              <EventList />
+            </ProtectedRoute>
+          } />
+          <Route path="/admin/events/add" element={
+            <ProtectedRoute>
+              <EventForm />
+            </ProtectedRoute>
+          } />
+          <Route path="/admin/events/edit/:id" element={
+            <ProtectedRoute>
+              <EventForm />
+            </ProtectedRoute>
+          } />
           
           {/* Panchayat Management Routes */}
-          <Route path="/admin/panchayat/members" element={<MemberList />} />
+          <Route path="/admin/panchayat/members" element={
+            <ProtectedRoute>
+              <MemberList />
+            </ProtectedRoute>
+          } />
           <Route path="/admin/panchayat/members/add" element={<MemberForm />} />
           <Route path="/admin/panchayat/members/edit/:id" element={<MemberForm />} />
           
           {/* Service Management Routes */}
-          <Route path="/admin/services/types" element={<ServiceTypeList />} />
-          <Route path="/admin/services/types/add" element={<ServiceTypeForm />} />
-          <Route path="/admin/services/types/edit/:id" element={<ServiceTypeForm />} />
-          <Route path="/admin/services/requests" element={<ServiceRequestList />} />
-          <Route path="/admin/services/requests/:id" element={<ServiceRequestDetail />} />
+          <Route path="/admin/services/types" element={
+            <ProtectedRoute>
+              <ServiceTypeList />
+            </ProtectedRoute>
+          } />
+          <Route path="/admin/services/types/add" element={
+            <ProtectedRoute>
+              <ServiceTypeForm />
+            </ProtectedRoute>
+          } />
+          <Route path="/admin/services/types/edit/:id" element={
+            <ProtectedRoute>
+              <ServiceTypeForm />
+            </ProtectedRoute>
+          } />
+          <Route path="/admin/services/requests" element={
+            <ProtectedRoute>
+              <ServiceRequestList />
+            </ProtectedRoute>
+          } />
+          <Route path="/admin/services/requests/:id" element={
+            <ProtectedRoute>
+              <ServiceRequestDetail />
+            </ProtectedRoute>
+          } />
           
           {/* Gallery Management Routes */}
-          <Route path="/admin/gallery" element={<GalleryList />} />
-          <Route path="/admin/gallery/add" element={<GalleryForm />} />
-          <Route path="/admin/gallery/edit/:id" element={<GalleryForm />} />
+          <Route path="/admin/gallery" element={
+            <ProtectedRoute>
+              <GalleryList />
+            </ProtectedRoute>
+          } />
+          <Route path="/admin/gallery/add" element={
+            <ProtectedRoute>
+              <GalleryForm />
+            </ProtectedRoute>
+          } />
+          <Route path="/admin/gallery/edit/:id" element={
+            <ProtectedRoute>
+              <GalleryForm />
+            </ProtectedRoute>
+          } />
           
           {/* Document Management Routes */}
-          <Route path="/admin/documents" element={<DocumentList />} />
-          <Route path="/admin/documents/add" element={<DocumentForm />} />
-          <Route path="/admin/documents/edit/:id" element={<DocumentForm />} />
+          <Route path="/admin/documents" element={
+            <ProtectedRoute>
+              <DocumentList />
+            </ProtectedRoute>
+          } />
+          <Route path="/admin/documents/add" element={
+            <ProtectedRoute>
+              <DocumentForm />
+            </ProtectedRoute>
+          } />
+          <Route path="/admin/documents/edit/:id" element={
+            <ProtectedRoute>
+              <DocumentForm />
+            </ProtectedRoute>
+          } />
           
           {/* Poll Management Routes */}
-          <Route path="/admin/polls" element={<PollList />} />
-          <Route path="/admin/polls/add" element={<PollForm />} />
-          <Route path="/admin/polls/edit/:id" element={<PollForm />} />
-          <Route path="/admin/polls/:id" element={<PollDetail />} />
+          <Route path="/admin/polls" element={
+            <ProtectedRoute>
+              <PollList />
+            </ProtectedRoute>
+          } />
+          <Route path="/admin/polls/add" element={
+            <ProtectedRoute>
+              <PollForm />
+            </ProtectedRoute>
+          } />
+          <Route path="/admin/polls/edit/:id" element={
+            <ProtectedRoute>
+              <PollForm />
+            </ProtectedRoute>
+          } />
+          <Route path="/admin/polls/:id" element={
+            <ProtectedRoute>
+              <PollDetail />
+            </ProtectedRoute>
+          } />
           
           {/* Panchayat Members Route */}
           <Route path="/panchayat/members" element={<MembersList />} />
           
           {/* Panchayat Route */}
           <Route path="/panchayat" element={<PanchayatMembers />} />
+          
+          {/* Forgot Password Route */}
+          <Route path="/forgot-password" element={<ForgotPassword />} />
+          
+          {/* Reset Password Route */}
+          <Route path="/reset-password/:token" element={<ResetPassword />} />
           
           {/* 404 Route */}
           <Route path="*" element={<NotFound />} />

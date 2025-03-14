@@ -1,15 +1,16 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import authService from './authService';
+import axios from 'axios';
 
 // Get user from localStorage
 const user = JSON.parse(localStorage.getItem('user'));
 
 const initialState = {
-  user: user ? user : null,
-  isError: false,
-  isSuccess: false,
-  isLoading: false,
-  message: ''
+  user: localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user')) : null,
+  token: localStorage.getItem('token') || null,
+  isAuthenticated: localStorage.getItem('token') ? true : false,
+  loading: false,
+  error: null
 };
 
 // Register user
@@ -17,15 +18,21 @@ export const register = createAsyncThunk(
   'auth/register',
   async (userData, thunkAPI) => {
     try {
-      return await authService.register(userData);
+      console.log('Register thunk called with:', userData);
+      const response = await axios.post('/api/auth/register', userData);
+      
+      if (response.data) {
+        localStorage.setItem('token', response.data.token);
+        return response.data;
+      }
     } catch (error) {
-      const message = 
-        (error.response && 
-          error.response.data && 
-          error.response.data.message) ||
+      const message =
+        error.response?.data?.message ||
+        error.response?.data?.msg ||
         error.message ||
         error.toString();
       
+      console.error('Register error:', error);
       return thunkAPI.rejectWithValue(message);
     }
   }
@@ -55,19 +62,9 @@ export const getCurrentUser = createAsyncThunk(
   'auth/getCurrentUser',
   async (_, thunkAPI) => {
     try {
-      const token = thunkAPI.getState().auth.user?.token;
-      if (!token) {
-        return thunkAPI.rejectWithValue('No token found');
-      }
       return await authService.getCurrentUser();
     } catch (error) {
-      const message = 
-        (error.response && 
-          error.response.data && 
-          error.response.data.message) ||
-        error.message ||
-        error.toString();
-      
+      const message = error.response?.data?.msg || error.message || error.toString();
       return thunkAPI.rejectWithValue(message);
     }
   }
@@ -83,61 +80,57 @@ export const authSlice = createSlice({
   initialState,
   reducers: {
     reset: (state) => {
-      state.isLoading = false;
-      state.isError = false;
-      state.isSuccess = false;
-      state.message = '';
+      state.loading = false;
+      state.error = null;
     }
   },
   extraReducers: (builder) => {
     builder
       .addCase(register.pending, (state) => {
-        state.isLoading = true;
+        state.loading = true;
       })
       .addCase(register.fulfilled, (state, action) => {
-        state.isLoading = false;
-        state.isSuccess = true;
+        state.loading = false;
         state.user = action.payload;
       })
       .addCase(register.rejected, (state, action) => {
-        state.isLoading = false;
-        state.isError = true;
-        state.message = action.payload;
+        state.loading = false;
+        state.error = action.payload;
         state.user = null;
       })
       .addCase(login.pending, (state) => {
-        state.isLoading = true;
+        state.loading = true;
       })
       .addCase(login.fulfilled, (state, action) => {
-        state.isLoading = false;
-        state.isSuccess = true;
-        state.user = action.payload;
+        state.loading = false;
+        state.user = action.payload.user;
+        state.token = action.payload.token;
+        state.isAuthenticated = true;
+        state.error = null;
       })
       .addCase(login.rejected, (state, action) => {
-        state.isLoading = false;
-        state.isError = true;
-        state.message = action.payload;
+        state.loading = false;
+        state.error = action.payload;
         state.user = null;
       })
       .addCase(getCurrentUser.pending, (state) => {
-        state.isLoading = true;
+        state.loading = true;
       })
       .addCase(getCurrentUser.fulfilled, (state, action) => {
-        state.isLoading = false;
-        state.isSuccess = true;
-        // Merge the user data with existing token
-        state.user = { 
-          ...state.user, 
-          ...action.payload 
-        };
+        state.loading = false;
+        state.user = action.payload;
+        state.isAuthenticated = true;
+        state.error = null;
       })
       .addCase(getCurrentUser.rejected, (state, action) => {
-        state.isLoading = false;
-        state.isError = true;
-        state.message = action.payload;
+        state.loading = false;
+        state.error = action.payload;
       })
       .addCase(logout.fulfilled, (state) => {
         state.user = null;
+        state.token = null;
+        state.isAuthenticated = false;
+        state.error = null;
       });
   }
 });

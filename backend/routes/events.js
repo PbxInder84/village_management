@@ -5,16 +5,38 @@ const eventController = require('../controllers/eventController');
 const { auth } = require('../middleware/auth');
 const { roleCheck } = require('../middleware/auth');
 const upload = require('../middleware/upload');
+const Event = require('../models/Event');
 
 // @route   GET api/events
 // @desc    Get all events
 // @access  Public
-router.get('/', eventController.getAllEvents);
+router.get('/', async (req, res) => {
+  try {
+    const events = await Event.find({ isPublished: true }).sort({ date: 1 });
+    res.json(events);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send('Server Error');
+  }
+});
 
-// @route   GET api/events/published
-// @desc    Get all published events
-// @access  Public
-router.get('/published', eventController.getEvents);
+// @route   GET api/events/all
+// @desc    Get all events (including unpublished)
+// @access  Private/Admin
+router.get('/all', auth, async (req, res) => {
+  try {
+    // Check if user is admin
+    if (!req.user.isAdmin && !req.user.role.includes('admin')) {
+      return res.status(401).json({ msg: 'Not authorized' });
+    }
+    
+    const events = await Event.find().sort({ date: 1 });
+    res.json(events);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send('Server Error');
+  }
+});
 
 // @route   GET api/events/:id
 // @desc    Get event by ID

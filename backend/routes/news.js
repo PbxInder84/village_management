@@ -5,16 +5,38 @@ const newsController = require('../controllers/newsController');
 const { auth } = require('../middleware/auth');
 const { roleCheck } = require('../middleware/auth');
 const upload = require('../middleware/upload');
+const News = require('../models/News');
 
 // @route   GET api/news
 // @desc    Get all news
 // @access  Public
-router.get('/', newsController.getAllNews);
+router.get('/', async (req, res) => {
+  try {
+    const news = await News.find({ isPublished: true }).sort({ createdAt: -1 });
+    res.json(news);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send('Server Error');
+  }
+});
 
-// @route   GET api/news/published
-// @desc    Get all published news
-// @access  Public
-router.get('/published', newsController.getPublishedNews);
+// @route   GET api/news/all
+// @desc    Get all news (including unpublished)
+// @access  Private/Admin
+router.get('/all', auth, async (req, res) => {
+  try {
+    // Check if user is admin
+    if (!req.user.isAdmin && !req.user.role.includes('admin')) {
+      return res.status(401).json({ msg: 'Not authorized' });
+    }
+    
+    const news = await News.find().sort({ createdAt: -1 });
+    res.json(news);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send('Server Error');
+  }
+});
 
 // @route   GET api/news/:id
 // @desc    Get news by ID

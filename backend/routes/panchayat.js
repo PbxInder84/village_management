@@ -3,18 +3,18 @@ const router = express.Router();
 const { check } = require('express-validator');
 const panchayatMemberController = require('../controllers/panchayatMemberController');
 const panchayatMeetingController = require('../controllers/panchayatMeetingController');
-const auth = require('../middleware/auth');
-const roleCheck = require('../middleware/roleCheck');
+const { auth } = require('../middleware/auth');
+const { roleCheck } = require('../middleware/auth');
 const upload = require('../middleware/upload');
 const PanchayatMember = require('../models/PanchayatMember');
 
 // Panchayat Member Routes
 // @route   GET api/panchayat/members
-// @desc    Get all panchayat members
+// @desc    Get all active panchayat members
 // @access  Public
-router.get('/members', async (req, res) => {
+router.get('/', async (req, res) => {
   try {
-    const members = await PanchayatMember.find().sort({ createdAt: -1 });
+    const members = await PanchayatMember.find({ isActive: true }).sort({ order: 1 });
     res.json(members);
   } catch (err) {
     console.error(err.message);
@@ -25,14 +25,14 @@ router.get('/members', async (req, res) => {
 // @route   GET api/panchayat/members/all
 // @desc    Get all panchayat members (including inactive)
 // @access  Private/Admin
-router.get('/members/all', auth, async (req, res) => {
+router.get('/all', auth, async (req, res) => {
   try {
     // Check if user is admin
     if (!req.user.isAdmin && !req.user.role.includes('admin')) {
       return res.status(401).json({ msg: 'Not authorized' });
     }
     
-    const members = await PanchayatMember.find().sort({ createdAt: -1 });
+    const members = await PanchayatMember.find().sort({ order: 1 });
     res.json(members);
   } catch (err) {
     console.error(err.message);
@@ -43,7 +43,23 @@ router.get('/members/all', auth, async (req, res) => {
 // @route   GET api/panchayat/members/:id
 // @desc    Get panchayat member by ID
 // @access  Public
-router.get('/members/:id', panchayatMemberController.getMemberById);
+router.get('/:id', async (req, res) => {
+  try {
+    const member = await PanchayatMember.findById(req.params.id);
+    
+    if (!member) {
+      return res.status(404).json({ msg: 'Panchayat member not found' });
+    }
+    
+    res.json(member);
+  } catch (err) {
+    console.error(err.message);
+    if (err.kind === 'ObjectId') {
+      return res.status(404).json({ msg: 'Panchayat member not found' });
+    }
+    res.status(500).send('Server Error');
+  }
+});
 
 // @route   POST api/panchayat/members
 // @desc    Add a new panchayat member
